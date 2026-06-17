@@ -1,0 +1,28 @@
+{
+  "requires": {
+    "[development]": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": { "url": ":memory:" }
+      }
+    },
+    "[production]": {
+      "db": {
+        "kind": "hana"
+      },
+      "CreditRFC": {
+        "kind": "rest",
+        "credentials": {
+          "url": "https://<cpi-host>/api/credit/v1",
+          "authentication": "OAuth2ClientCredentials",
+          "tokenServiceUrl": "https://<xsuaa-host>/oauth/token",
+          "clientId": "<client-id>",
+          "clientSecret": "<client-secret>"
+        }
+      }
+    }
+  },
+  "server": {
+    "cors": true
+  }
+}

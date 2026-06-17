@@ -1,0 +1,6 @@
+node_modules/
+.env
+gen/
+mta_archives/
+*.mtar
+.DS_Store

@@ -1,0 +1,57 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "com.heineken.demonstrativoCredito",
+    "type": "application",
+    "title": "Demonstrativo de Crédito",
+    "description": "Consulta de itens compensados AR — substitui portal legado Web Dynpro",
+    "applicationVersion": { "version": "1.0.0" },
+    "dataSources": {
+      "creditService": {
+        "uri": "/odata/v4/credit/",
+        "type": "OData",
+        "settings": { "odataVersion": "4.0" }
+      }
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "models": {
+      "": {
+        "dataSource": "creditService",
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server"
+        }
+      }
+    },
+    "routing": {
+      "routes": [{
+        "pattern": ":?query:",
+        "name": "CreditItemsList",
+        "target": "CreditItemsList"
+      }],
+      "targets": {
+        "CreditItemsList": {
+          "type": "Component",
+          "id": "CreditItemsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "CreditItems",
+              "variantManagement": "Page",
+              "initialLoad": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

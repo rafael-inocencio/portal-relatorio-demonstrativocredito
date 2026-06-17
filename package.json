@@ -1,0 +1,22 @@
+{
+  "name": "demonstrativo-credito",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cds-serve",
+    "dev": "cds serve --with-mocks",
+    "test": "jest --testEnvironment node"
+  },
+  "dependencies": {
+    "@sap/cds": "^9",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2",
+    "@sap/cds-dk": "^9",
+    "jest": "^29",
+    "@cap-js/cds-test": "latest"
+  },
+  "jest": {
+    "testTimeout": 30000
+  }
+}

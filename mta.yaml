@@ -1,0 +1,50 @@
+_schema-version: '3.3.0'
+ID: demonstrativo-credito
+version: 1.0.0
+description: Demonstrativo de Crédito — SAP CAP BTP
+
+modules:
+
+  - name: demonstrativo-credito-srv
+    type: nodejs
+    path: .
+    parameters:
+      buildpack: nodejs_buildpack
+      disk-quota: 512M
+      memory: 256M
+    build-parameters:
+      builder: npm
+      build-result: .
+      ignore: [node_modules/, .env]
+    requires:
+      - name: demonstrativo-credito-dest
+      - name: demonstrativo-credito-xsuaa
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+
+  - name: demonstrativo-credito-app
+    type: html5
+    path: app/credito
+    build-parameters:
+      builder: custom
+      commands: []
+      supported-platforms: []
+
+resources:
+
+  - name: demonstrativo-credito-dest
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+
+  - name: demonstrativo-credito-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      config:
+        xsappname: demonstrativo-credito
+        tenant-mode: dedicated
