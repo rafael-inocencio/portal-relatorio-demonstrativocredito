@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "PowerShell($env:PATH = $env:PATH + \";C:\\\\Program Files\\\\nodejs\"; npm install)",
-      "PowerShell($env:PATH = $env:PATH + \";C:\\\\Program Files\\\\nodejs\"; npm test 2>&1)"
+      "PowerShell($env:PATH = $env:PATH + \";C:\\\\Program Files\\\\nodejs\"; npm test 2>&1)",
+      "Bash(curl -s 'http://localhost:4004/$fiori-preview/CreditService/CreditItems#preview-app')"
     ]
   }
 }

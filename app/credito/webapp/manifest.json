@@ -4,7 +4,7 @@
     "id": "com.heineken.demonstrativoCredito",
     "type": "application",
     "title": "Demonstrativo de Crédito",
-    "description": "Consulta de itens compensados AR — substitui portal legado Web Dynpro",
+    "description": "Consulta Demonstrativo de Crédito",
     "applicationVersion": { "version": "1.0.0" },
     "dataSources": {
       "creditService": {
@@ -14,30 +14,47 @@
       }
     }
   },
+  "sap.ui": {
+    "technology": "UI5",
+    "fullWidth": true
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
   "sap.ui5": {
+    "flexEnabled": true,
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
+        "sap.fe.core": {},
         "sap.fe.templates": {}
       }
     },
     "models": {
       "": {
+        "type": "sap.ui.model.odata.v4.ODataModel",
         "dataSource": "creditService",
+        "preload": true,
         "settings": {
           "synchronizationMode": "None",
-          "operationMode": "Server"
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "groupId": "$direct"
         }
       }
     },
     "routing": {
-      "routes": [{
-        "pattern": ":?query:",
-        "name": "CreditItemsList",
-        "target": "CreditItemsList"
-      }],
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "CreditItemsList",
+          "target": "CreditItemsList"
+        }
+      ],
       "targets": {
         "CreditItemsList": {
           "type": "Component",
@@ -45,9 +62,17 @@
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "entitySet": "CreditItems",
-              "variantManagement": "Page",
-              "initialLoad": false
+              "contextPath": "/CreditItems",
+              "initialLoad": true,
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "None",
+                    "creationMode": { "name": "None" }
+                  }
+                }
+              }
             }
           }
         }

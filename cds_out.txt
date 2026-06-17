@@ -1,0 +1,21 @@
+[cds] - loaded model from 3 file(s):
+ 
+  app\credito\annotations.cds
+  srv\credit-service.cds
+  db\schema.cds
+
+[cds] - connect to db > sqlite { url: ':memory:' }
+  > init from db\data\my.company-CreditItems.csv 
+/> successfully deployed to in-memory database. 
+
+[cds] - using auth strategy {
+  kind: 'mocked',
+  impl: 'node_modules\\@sap\\cds\\lib\\srv\\middlewares\\auth\\basic-auth.js'
+}
+[cds] - serving CreditService {
+  at: [ '/odata/v4/credit' ],
+  decl: 'srv\\credit-service.cds:4',
+  impl: 'srv\\credit-service.js'
+}
+[cds] - server listening on { url: 'http://localhost:4009' }
+[cds] - server v9.9.1 launched in 804 ms

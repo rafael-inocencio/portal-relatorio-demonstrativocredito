@@ -1,6 +1,8 @@
 using CreditService as service from '../../srv/credit-service';
 
+// ─── Labels dos campos ────────────────────────────────────────────────────
 annotate service.CreditItems with {
+  ID             @UI.Hidden;
   clearingDocNo  @title: 'No. Documento de Compensação';
   docType        @title: 'Tipo';
   paymentMethod  @title: 'MP';
@@ -8,11 +10,22 @@ annotate service.CreditItems with {
   docNo          @title: 'Número do Documento';
   amountLC       @title: 'Valor R$'
                  @Measures.ISOCurrency: currency;
+  currency       @UI.Hidden;
   itemText       @title: 'Pedido';
   notaFiscal     @title: 'Nota Fiscal';
-  companyCode    @title: 'Empresa';
-  customer       @title: 'Cliente';
+  companyCode    @UI.Hidden;
+  customer       @UI.Hidden;
+  postingDate    @UI.Hidden;
+  fiscalYear     @UI.Hidden;
+  dbCrIndicator  @UI.Hidden;
 }
+
+// ─── List Report ──────────────────────────────────────────────────────────
+annotate service.CreditItems with @(
+  Capabilities.InsertRestrictions: { Insertable: false },
+  Capabilities.UpdateRestrictions: { Updatable: false },
+  Capabilities.DeleteRestrictions: { Deletable: false },
+) {}; // bloqueia botões Create/Edit/Delete — tabela somente leitura
 
 annotate service.CreditItems with @(
 
@@ -22,6 +35,7 @@ annotate service.CreditItems with @(
     Title          : { $Type: 'UI.DataField', Value: clearingDocNo }
   },
 
+  // Colunas da tabela (ordem = tela legada)
   UI.LineItem: [
     { $Type: 'UI.DataField', Value: clearingDocNo,  Label: 'No. Doc. Compensação' },
     { $Type: 'UI.DataField', Value: docType,        Label: 'Tipo' },
@@ -33,6 +47,7 @@ annotate service.CreditItems with @(
     { $Type: 'UI.DataField', Value: notaFiscal,     Label: 'Nota Fiscal' },
   ],
 
+  // Filtros da barra de busca — clearingDate renderiza como intervalo (De/Até) automaticamente
   UI.SelectionFields: [
     clearingDate,
     notaFiscal
