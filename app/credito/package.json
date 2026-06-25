@@ -1,0 +1,22 @@
+{
+  "name": "demonstrativo-credito-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demonstrativo de Crédito — Fiori Elements UI",
+  "scripts": {
+    "start": "ui5 serve --port 8080 -o index.html",
+    "build": "ui5 build preload --clean-dest --config ui5-deploy.yaml"
+  },
+  "devDependencies": {
+    "@ui5/cli"                  : "^4",
+    "ui5-middleware-simpleproxy": "^3",
+    "ui5-task-zipper"           : "^3"
+  },
+  "ui5": {
+    "dependencies": [
+      "ui5-task-zipper",
+      "ui5-middleware-simpleproxy"
+    ]
+  },
+  "main": "webapp/index.html"
+}

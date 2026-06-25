@@ -3,9 +3,22 @@
   "sap.app": {
     "id": "com.heineken.demonstrativoCredito",
     "type": "application",
-    "title": "Demonstrativo de Crédito",
-    "description": "Consulta Demonstrativo de Crédito",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
     "applicationVersion": { "version": "1.0.0" },
+    "crossNavigation": {
+      "inbounds": {
+        "CreditItems-display": {
+          "semanticObject": "CreditItems",
+          "action": "display",
+          "title": "Demonstrativo de Crédito",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    },
     "dataSources": {
       "creditService": {
         "uri": "/odata/v4/credit/",
@@ -34,6 +47,10 @@
       }
     },
     "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      },
       "": {
         "type": "sap.ui.model.odata.v4.ODataModel",
         "dataSource": "creditService",

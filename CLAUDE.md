@@ -9,7 +9,7 @@ npm run dev          # Start CAP server locally with CSV mock data (NODE_ENV=dev
 npm test             # Run all Jest tests (6 tests, ~2s)
 npm test -- --testNamePattern="filtra"  # Run a single test by name pattern
 npx cds compile db/schema.cds --to json  # Validate CDS schema
-NODE_ENV=production npm start            # Start with production profile (CPI stub active)
+NODE_ENV=production npm start            # Start with production profile (SOAP/RFC active)
 mbt build                                # Build MTA archive for BTP deploy
 ```
 
@@ -27,7 +27,7 @@ This is a **SAP CAP (Cloud Application Programming Model)** project targeting SA
 
 ### Mock-first strategy
 
-Development and tests always use in-memory SQLite seeded from `db/data/my.company-CreditItems.csv`. Production switches to SAP HANA + CPI REST call — **no code change required**, only `NODE_ENV=production`.
+Development and tests always use in-memory SQLite seeded from `db/data/my.company-CreditItems.csv`. Production switches to SAP HANA + SOAP/RFC via Cloud Connector — **no code change required**, only `NODE_ENV=production`.
 
 The switch is controlled by `IS_PROD = process.env.NODE_ENV === 'production'` at the top of `srv/credit-service.js`.
 
@@ -36,9 +36,8 @@ The switch is controlled by `IS_PROD = process.env.NODE_ENV === 'production'` at
 ```
 Browser → Fiori Elements
         → CAP getItems() function  (OData V4 function import, not entity query)
-        → _fetchFromCPI()          (POST /getBalancedItems to CPI)
-        → SAP CPI Integration Suite
-        → Cloud Connector → ECC on-premise
+        → _fetchFromRFC(req)       (POST /sap/bc/soap/rfc via Cloud Connector)
+        → SAP Cloud Connector → ECC on-premise
         → BAPI_AR_ACC_GETBALANCEDITEMS
 ```
 
@@ -50,12 +49,29 @@ In development `_fetchFromMock()` runs a CDS SELECT against the SQLite CSV data 
 - **Nota fiscal filter is applied in-process** (`_mapRFCtoEntity` / `_fetchFromMock`), not in the RFC, because the BAPI has no NF parameter.
 - **CSV naming convention is mandatory:** `db/data/my.company-CreditItems.csv` — CAP derives the target entity from `namespace-EntityName.csv`.
 - **No `better-sqlite3` or `sqlite3` directly** — only `@cap-js/sqlite` (official CAP adapter, no native build issues on BTP).
-- **Date conversion:** CAP uses `YYYY-MM-DD`; SAP ABAP RFC uses `YYYYMMDD`. `_fetchFromCPI` converts both directions.
+- **Date conversion:** CAP uses `YYYY-MM-DD`; SAP ABAP RFC uses `YYYYMMDD`. `_fetchFromRFC` converts both directions.
 - **`app/services.cds` must stay empty.** CAP includes all `app/**/*.cds` automatically. This file came from a scaffold with a broken reference (`./project1/annotations`) — keep it empty.
+- **CUSTOMER from logged-in user:** `userId.split('@')[0].slice(0, 8).padStart(8, '0')` — first 8 chars of the user before `@`, zero-padded.
 
-### CPI contract
+### SOAP/RFC contract
 
-POST `https://<cpi-host>/api/credit/v1/getBalancedItems` with JSON `{ COMPANY_CODE, CUSTOMER, DATE_FROM, DATE_TO }` (dates as `YYYYMMDD`). Response: `{ RETURN: { TYPE, CODE, MESSAGE }, LINEITEMS: [...] }`. `TYPE='E'` means error. The 14 RFC fields used are mapped in `_mapRFCtoEntity()`.
+```
+POST https://<cloud-connector>/sap/bc/soap/rfc
+SOAPAction: http://www.sap.com/BAPI_AR_ACC_GETBALANCEDITEMS
+Content-Type: text/xml; charset=UTF-8
+Namespace: urn:sap-com:document:sap:soap:functions:mc-style
+```
+
+Response parsed with `fast-xml-parser` (`removeNSPrefix: true`, `isArray: name => name === 'item'`).
+Dual-field helper: `const f = (o, pascal, upper) => (o?.[pascal] ?? o?.[upper] ?? '').toString().trim()`
+
+### Cloud Connector destination name
+
+Destination name: **`QA3_20`** — configured in:
+- `mta.yaml` → `properties.RFC_DESTINATION: QA3_20`
+- `srv/credit-service.js` → `process.env.RFC_DESTINATION || 'QA3_20'`
+
+The destination must be created in BTP Destination Service pointing to the ECC system via Cloud Connector.
 
 ## Fiori Elements app
 
@@ -133,6 +149,14 @@ Use `contextPath` (not `entitySet`) — required in sap.fe.templates 1.120+:
 }
 ```
 
+i18n model must be registered in `sap.ui5.models`:
+```json
+"i18n": {
+  "type": "sap.ui.model.resource.ResourceModel",
+  "uri": "i18n/i18n.properties"
+}
+```
+
 ### Auxiliary files required
 
 | File | Purpose |
@@ -140,6 +164,16 @@ Use `contextPath` (not `entitySet`) — required in sap.fe.templates 1.120+:
 | `app/credito/webapp/Component-preload.js` | Empty bundle — prevents CAP from returning HTML on 404 (MIME block) |
 | `app/credito/webapp/appconfig/fioriSandboxConfig.json` | Config fetched by sandbox.js at `../appconfig/` relative path |
 | `app/credito/webapp/changes/flexibility-bundle.json` | Must be an object `{ "changes": [], ... }` — NOT an array `[]` |
+| `app/credito/webapp/i18n/i18n.properties` | PT-BR labels for UI (title, fields, filters, errors) |
+| `_i18n/i18n.properties` | CDS-level labels for OData metadata (entity + fields) |
+
+### ui5.yaml — dev vs build
+
+**`app/credito/ui5.yaml` does NOT exist** — its presence causes `cds-plugin-ui5` to call `@ui5/project` which tries to download SAPUI5 packages from npm registry and hangs indefinitely (server stuck at "Mounting..."). Without the file, the plugin serves static files directly from `webapp/`.
+
+The `framework` section lives only in `app/credito/ui5-deploy.yaml` (used exclusively for `mbt build`).
+
+`@ui5/cli` and `ui5-middleware-simpleproxy` must be in the **root** `package.json` devDependencies (not in `app/credito/package.json`) so that `cds watch` can find them.
 
 ## Test setup
 

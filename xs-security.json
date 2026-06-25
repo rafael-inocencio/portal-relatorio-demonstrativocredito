@@ -1,0 +1,19 @@
+{
+  "xsappname": "demonstrativo-credito",
+  "tenant-mode": "dedicated",
+  "description": "Security config — Demonstrativo de Crédito",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Display",
+      "description": "Consulta do demonstrativo de crédito"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "CreditDisplay",
+      "description": "Usuário com acesso ao demonstrativo de crédito",
+      "scope-references": ["$XSAPPNAME.Display"]
+    }
+  ]
+}

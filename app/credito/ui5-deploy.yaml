@@ -1,0 +1,28 @@
+specVersion: "3.1"
+metadata:
+  name: com.heineken.demonstrativo-credito
+type: application
+framework:
+  name: SAPUI5
+  version: "1.120.30"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.fe.templates
+    - name: sap.ushell
+    - name: themelib_sap_horizon
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+      - "/localService/**"
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: generateVersionInfo
+      configuration:
+        archiveName: credito
+        additionalFiles:
+          - xs-app.json

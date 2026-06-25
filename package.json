@@ -1,30 +1,33 @@
 {
   "name": "demonstrativo-credito",
   "version": "1.0.0",
+  "engines": { "node": ">=20" },
+  "sapux": ["app/credito"],
   "scripts": {
     "start": "cds-serve",
-    "dev": "cds serve --with-mocks",
-    "test": "jest --testEnvironment node",
-    "watch-project1": "cds watch --open project1/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "dev"  : "cds watch",
+    "build": "cds build --production",
+    "test" : "jest --testEnvironment node"
   },
   "dependencies": {
-    "@sap/cds": "^9",
-    "express": "^4"
+    "@sap-cloud-sdk/connectivity": "^3",
+    "@sap-cloud-sdk/http-client" : "^3",
+    "@sap/cds"                  : "^9",
+    "@sap/xssec"                : "^4",
+    "express"                   : "^4",
+    "fast-xml-parser"           : "^4"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^2",
-    "@sap/cds-dk": "^9",
-    "jest": "^29",
-    "@cap-js/cds-test": "latest",
-    "cds-plugin-ui5": "^0.17.0"
+    "@cap-js/cds-test"         : "latest",
+    "@cap-js/sqlite"           : "^2",
+    "@sap/cds-dk"              : "^9",
+    "@ui5/cli"                 : "^4",
+    "cds-plugin-ui5"           : "^0.17.0",
+    "jest"                     : "^29",
+    "ui5-middleware-simpleproxy": "^3",
+    "ui5-task-zipper"          : "^3"
   },
   "jest": {
     "testTimeout": 30000
-  },
-  "workspaces": [
-    "app/*"
-  ],
-  "sapux": [
-    "app/project1"
-  ]
+  }
 }

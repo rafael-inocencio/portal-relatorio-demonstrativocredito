@@ -1,5 +1,12 @@
 {
   "requires": {
+    "auth": {
+      "[development]": { "kind": "mocked" },
+      "kind": "xsuaa"
+    },
+    "connectivity": true,
+    "destinations" : true,
+    "html5-runtime": true,
     "[development]": {
       "db": {
         "kind": "sqlite",
@@ -7,19 +14,7 @@
       }
     },
     "[production]": {
-      "db": {
-        "kind": "hana"
-      },
-      "CreditRFC": {
-        "kind": "rest",
-        "credentials": {
-          "url": "https://<cpi-host>/api/credit/v1",
-          "authentication": "OAuth2ClientCredentials",
-          "tokenServiceUrl": "https://<xsuaa-host>/oauth/token",
-          "clientId": "<client-id>",
-          "clientSecret": "<client-secret>"
-        }
-      }
+      "db": { "kind": "hana" }
     }
   },
   "server": {
