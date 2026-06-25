@@ -29,5 +29,17 @@
   },
   "jest": {
     "testTimeout": 30000
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": { "kind": "mocked" },
+        "kind": "xsuaa"
+      },
+      "connectivity": true,
+      "destinations": true,
+      "html5-runtime": true
+    },
+    "server": { "cors": true }
   }
 }

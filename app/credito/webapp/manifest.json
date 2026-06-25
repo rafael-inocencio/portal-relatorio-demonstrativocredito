@@ -31,6 +31,10 @@
     "technology": "UI5",
     "fullWidth": true
   },
+  "sap.cloud": {
+    "public": true,
+    "service": "demonstrativocredito.service"
+  },
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "transactional"
